@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python">
+  <head>
+    <meta charset="utf-8" />
+    <title>Integration with GitHub &#8212; demo-the-docs 2021 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="integration-with-github">
+<h1>Integration with GitHub<a class="headerlink" href="#integration-with-github" title="Permalink to this headline">¶</a></h1>
+<p>For starter it's necessary to say, that GitHub...</p>
+<p>...is awesome! If you don't needed and you went through whole process above, you can probably save a lot of headaches just by using GitHub. You don't need any special knowledge for start, but you will need to learn them on the fly while reading this tutorial (there is really a lot about git out there, google is your friend).</p>
+<p>The variant I propose here is very easy, scalable and fast. Probably the most easy and effective I've found.</p>
+<div class="section" id="why-to-use-it">
+<h2>Why to use it<a class="headerlink" href="#why-to-use-it" title="Permalink to this headline">¶</a></h2>
+<p>I was so happy when I deployd my first django project. But few weeks later I've found that it's just not feeling right to make changes on live version of the website (sometimes refered as <em>production</em>). So I started to use GitHub and found a solution.</p>
+<p>Here I will cover this:
+For every your website you end up with one directory including three subdirectories.</p>
+<ol class="arabic simple">
+<li><p>First called <strong>production</strong> - it's the one which is live on the internet - the one what <code class="docutils literal notranslate"><span class="pre">nginx</span></code> refers.</p></li>
+<li><p>Second called <strong>mydomain.git</strong> - this one is necessary for our github configuration. You will barely change there anything</p></li>
+<li><p>Last one - <strong>work_dir</strong> - the one where all changes are being made and is connected to GitHub</p></li>
+</ol>
+</div>
+<div class="section" id="workflow">
+<h2>Workflow<a class="headerlink" href="#workflow" title="Permalink to this headline">¶</a></h2>
+<p>Your work will look like this:</p>
+<ol class="arabic simple">
+<li><p>Your work_dir contains master branch. This branch can be pushed to production (to go live) anywhen! So when you want to make change to your website, you need create new branch (correctly named based on the change you are doing - e.g. <em>hotfix_plugin</em>, <em>typo_css</em>...) and when you finish and test this branch, you merge it to master.</p></li>
+<li><p>You push master to your GitHub repository</p></li>
+<li><p>You push master to your production folder on your computer</p></li>
+</ol>
+</div>
+<div class="section" id="set-it-all-up">
+<h2>Set it all up<a class="headerlink" href="#set-it-all-up" title="Permalink to this headline">¶</a></h2>
+<p>So how to do it? I suppose you have one working directory as we created in previous chapters.</p>
+<p>Now go to the place where you websites are stored. Mine is in <code class="docutils literal notranslate"><span class="pre">/var/www</span></code> and create this structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>mydomain
+├── mydomain.git
+├── production
+└── work_dir
+</pre></div>
+</div>
+<p>Go to <code class="docutils literal notranslate"><span class="pre">/var/www/mydomain.git</span></code> and type this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">init</span> <span class="o">--</span><span class="n">bare</span>
+</pre></div>
+</div>
+<p>this will create just git repository with some special folders. You don't need to know anything about it. All you need to do is to create this file <code class="docutils literal notranslate"><span class="pre">/var/www/mydomain/mydomain.git/hooks/post-receive</span></code> and add this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/sh</span>
+<span class="n">git</span> <span class="o">--</span><span class="n">work</span><span class="o">-</span><span class="n">tree</span><span class="o">=/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">mydomain</span><span class="o">/</span><span class="n">production</span> <span class="o">--</span><span class="n">git</span><span class="o">-</span><span class="nb">dir</span><span class="o">=/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">mydomain</span><span class="o">/</span><span class="n">mydomain</span><span class="o">.</span><span class="n">git</span> <span class="n">checkout</span> <span class="o">-</span><span class="n">f</span>
+</pre></div>
+</div>
+<p>and make the script runable <code class="docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">+x</span> <span class="pre">/var/www/mydomain/mydomain.git/hooks/post-receive</span></code></p>
+<p>Go to work_dir and paste there you current <em>production</em> code (the one from previous chapters). Now you need to make a GitHub repository from that. The best guide is this one: <a class="reference external" href="https://help.github.com/articles/adding-an-existing-project-to-github-using-the-command-line/">How to add existing folder to GitHub</a>. (Maybe you'll need to <a class="reference external" href="https://help.github.com/articles/generating-ssh-keys/">generate SSH key</a>). Is it working? Great.</p>
+<blockquote>
+<div><p>Note: It's very good to make git repositories as small as possible, so don't add to repository files which are not necessary or you backup them somewhere else. But virtualenv is a good thing to add there to IMHO.</p>
+</div></blockquote>
+<p>Now just add another remote, which will point to our created git repository. Every time we'll want to go live with master, we'll push changes to this git repository and it will take care to transfer our files to production. So in work_dir type:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">remote</span> <span class="n">add</span> <span class="n">production</span> <span class="n">file</span><span class="p">::</span><span class="o">///</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">mydomain</span><span class="o">/</span><span class="n">mydomain</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+<p>and that's all. When you now want to push changes to production, type <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">production</span> <span class="pre">master</span></code>. Congratulations!</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">demo-the-docs</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Tej Shahi.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/author.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
