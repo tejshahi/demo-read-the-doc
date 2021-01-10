@@ -10,12 +10,12 @@ Welcome to demo-the-docs's documentation!
    	:maxdepth: 2
 	:caption: Table of Contents:
 	source/author
-..toctree::
+.. toctree::
 	:maxdepth:2
 	:caption: Machine Learning
 	source/machine-learning
 	
-..toctree::
+.. toctree::
 	:maxdepth:2
 	:caption: Data Science
 	source/data-science
